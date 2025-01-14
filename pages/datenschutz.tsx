@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 
 export default function Datenschutz() {
   return (
@@ -57,7 +58,7 @@ export default function Datenschutz() {
             Zurück zur Startseite
           </a>
          </Link>
-        </div>
+       </div>
       </div>
     </div>
   );
