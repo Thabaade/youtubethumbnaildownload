@@ -52,12 +52,11 @@ export default function Datenschutz() {
         </p>
 
         <div className="mt-8">
-          <a
-            href="/"
-            className="bg-red-600 text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition"
-          >
+         <Link href="/">
+          <a className="bg-red-600 text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition">
             Zurück zur Startseite
           </a>
+         </Link>
         </div>
       </div>
     </div>

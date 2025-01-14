@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,9 +12,9 @@ export default function Header() {
     <header className="bg-white text-red-600 py-4">
       <div className="container mx-auto flex justify-between items-center px-4">
         <h1 className="text-2xl font-bold">
-          <a href="/" className="hover:underline">
-            Youtube Thumbnail Download
-          </a>
+          <Link href="/">
+            <a className="hover:underline">Youtube Thumbnail Download</a>
+          </Link>
         </h1>
         <button
           className="md:hidden text-red-600 focus:outline-none"
@@ -35,25 +36,25 @@ export default function Header() {
           </svg>
         </button>
         <nav
-          className={`md:flex md:space-x-6 absolute md:relative bg-white top-16 md:top-0 left-0 w-full md:w-auto transition-all duration-300 ease-in-out ${
+          className={`md:flex md:space-x-6 absolute md:relative bg-white top-16 md:top-0 left-0 w-full md:w-auto ${
             isMenuOpen ? "block" : "hidden"
           }`}
         >
           <ul className="flex flex-col md:flex-row md:items-center md:space-x-6 px-4 md:px-0">
             <li>
-              <a href="/" className="block py-2 md:py-0 hover:underline">
-                Startseite
-              </a>
+              <Link href="/">
+                <a className="block py-2 md:py-0 hover:underline">Startseite</a>
+              </Link>
             </li>
             <li>
-              <a href="/uber-uns" className="block py-2 md:py-0 hover:underline">
-                Über uns
-              </a>
+              <Link href="/uber-uns">
+                <a className="block py-2 md:py-0 hover:underline">Über uns</a>
+              </Link>
             </li>
             <li>
-              <a href="/datenschutz" className="block py-2 md:py-0 hover:underline">
-                Datenschutz
-              </a>
+              <Link href="/datenschutz">
+                <a className="block py-2 md:py-0 hover:underline">Datenschutz</a>
+              </Link>
             </li>
           </ul>
         </nav>

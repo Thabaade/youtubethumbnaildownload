@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Head from "next/head";
+import Image from "next/image";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -27,7 +28,7 @@ export default function Home() {
       } else {
         setError(data.error);
       }
-    } catch (err) {
+    } catch (_) {
       setError("Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.");
     }
   };
@@ -143,7 +144,7 @@ const handleDownload = async (imageUrl: string, quality: string) => {
                     ? "Mittlere Qualität"
                     : "Standardqualität"}
                 </h3>
-                <img
+                <Image
                   src={thumbnails[quality]}
                   alt={`${quality} resolution`}
                   className={`rounded-lg shadow-lg ${
