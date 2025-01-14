@@ -7,29 +7,15 @@ export default function Home() {
   const [thumbnails, setThumbnails] = useState(null);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setThumbnails(null);
-
+  
     try {
-      const response = await fetch("/api/thumbnail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setThumbnails(data.resolutions);
-      } else {
-        setError(data.error);
-      }
-    } catch (_) {
-      setError("Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.");
+      // Your existing logic
+    } catch (err) {
+      setError("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
     }
   };
 
