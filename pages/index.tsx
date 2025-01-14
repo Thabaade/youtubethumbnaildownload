@@ -1,114 +1,172 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { useState } from "react";
+import Head from "next/head";
 
 export default function Home() {
-  return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              pages/index.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [url, setUrl] = useState("");
+  const [thumbnails, setThumbnails] = useState(null);
+  const [error, setError] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setThumbnails(null);
+
+    try {
+      const response = await fetch("/api/thumbnail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setThumbnails(data.resolutions);
+      } else {
+        setError(data.error);
+      }
+    } catch (err) {
+      setError("Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.");
+    }
+  };
+
+const handleDownload = async (imageUrl: string, quality: string) => {
+  try {
+    const response = await fetch(`/api/download?url=${encodeURIComponent(imageUrl)}`);
+
+    if (!response.ok) {
+      throw new Error("Bild konnte nicht heruntergeladen werden.");
+    }
+
+    const blob = await response.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `youtube-thumbnail-${quality}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  } catch (err) {
+    console.error("Error during download:", err);
+    alert("Fehler beim Herunterladen der Datei. Bitte versuchen Sie es erneut.");
+  }
+};
+
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <Head>
+        <title>YouTube Thumbnail Downloader | Laden Sie Thumbnails kostenlos herunter</title>
+        <meta
+          name="description"
+          content="Laden Sie hochauflösende Thumbnails von YouTube-Videos kostenlos herunter. Einfacher, schneller und effizienter YouTube Thumbnail Downloader."
+        />
+        <meta
+          name="keywords"
+          content="YouTube Thumbnail herunterladen, YouTube Miniaturbilder speichern, YouTube Thumbnail kostenlos, Miniaturbilder herunterladen kostenlos"
+        />
+        <meta name="author" content="YoutubeThumbnailDownload.de" />
+        <meta name="robots" content="index, follow" />
+
+        <meta property="og:title" content="YouTube Thumbnail Downloader" />
+        <meta
+          property="og:description"
+          content="Laden Sie hochauflösende Thumbnails von YouTube-Videos kostenlos herunter."
+        />
+        <meta property="og:image" content="/assets/thumbnail-preview.jpg" />
+        <meta property="og:url" content="https://www.YoutubeThumbnailDownload.de" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="de_DE" />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Youtube Thumbnail Downloader",
+              url: "https://www.YoutubeThumbnailDownload.de",
+              description:
+                "Laden Sie kostenlos Thumbnails von YouTube-Videos in hoher Qualität herunter.",
+              inLanguage: "de",
+            }),
+          }}
+        />
+      </Head>
+
+      <div className="w-full max-w-lg text-center">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-8">YouTube Thumbnail Downloader</h1>
+        <p className="text-gray-500 text-lg leading-relaxed mb-8">
+          Mit dieser Anwendung kannst du Thumbnails in höchster Qualität herunterladen. Füge einfach die URL des Videos in
+          das untenstehende Eingabefeld ein und klicke auf „Thumbnail herunterladen“. Schneller, einfacher und kostenlos!
+        </p>
+
+        <form onSubmit={handleSubmit} className="w-full max-w-lg mb-8 flex flex-col space-y-4 items-center justify-center">
+          <input
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="YouTube-Video-URL eingeben"
+            className="border-2 border-red-500 rounded-full py-3 px-6 text-gray-700 text-lg w-full focus:outline-none focus:ring-2 focus:ring-red-500 shadow-md"
+          />
+          <button
+            type="submit"
+            className="bg-red-600 text-white py-3 px-10 rounded-full shadow-lg hover:bg-red-700 transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Thumbnail Downloader​
+          </button>
+        </form>
+
+        {error && <p className="text-red-500">{error}</p>}
+      </div>
+
+      {thumbnails && (
+        <div className="w-full max-w-4xl space-y-6">
+          {["maxres", "high", "medium", "default"].map((quality, index) => {
+            if (!thumbnails[quality]) return null;
+
+            return (
+              <div
+                key={quality}
+                className={`bg-white shadow-md rounded-lg p-4 flex flex-col items-center ${
+                  index === 0 ? "space-y-6" : "space-y-4"
+                }`}
+              >
+                <h3 className="text-lg font-bold text-gray-800 capitalize">
+                  {quality === "maxres"
+                    ? "Maximale Qualität"
+                    : quality === "high"
+                    ? "Hohe Qualität"
+                    : quality === "medium"
+                    ? "Mittlere Qualität"
+                    : "Standardqualität"}
+                </h3>
+                <img
+                  src={thumbnails[quality]}
+                  alt={`${quality} resolution`}
+                  className={`rounded-lg shadow-lg ${
+                    index === 0 ? "w-full max-w-2xl" : "w-full max-w-md"
+                  }`}
+                />
+                <button
+                  onClick={() => handleDownload(thumbnails[quality], quality)}
+                  className="inline-block bg-blue-500 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-600 transition"
+                >
+                  {`${quality === "maxres"
+                    ? "Maximale Qualität"
+                    : quality === "high"
+                    ? "Hohe Qualität"
+                    : quality === "medium"
+                    ? "Mittlere Qualität"
+                    : "Standardqualität"} Thumbnail herunterladen`}
+                </button>
+              </div>
+            );
+          })}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
     </div>
   );
 }
