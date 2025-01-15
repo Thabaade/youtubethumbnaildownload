@@ -12,9 +12,7 @@ export default function Header() {
     <header className="bg-white text-red-600 py-4">
       <div className="container mx-auto flex justify-between items-center px-4">
         <h1 className="text-2xl font-bold">
-          <Link href="/">
-            <a className="hover:underline">Youtube Thumbnail Download</a>
-          </Link>
+          <Link href="/" className="hover:underline">Youtube Thumbnail Download</Link>
         </h1>
         <button
           className="md:hidden text-red-600 focus:outline-none"
@@ -42,19 +40,13 @@ export default function Header() {
         >
           <ul className="flex flex-col md:flex-row md:items-center md:space-x-6 px-4 md:px-0">
             <li>
-              <Link href="/">
-                <a className="block py-2 md:py-0 hover:underline">Startseite</a>
-              </Link>
+              <Link href="/" className="block py-2 md:py-0 hover:underline">Startseite</Link>
             </li>
             <li>
-              <Link href="/uber-uns">
-                <a className="block py-2 md:py-0 hover:underline">Über uns</a>
-              </Link>
+              <Link href="/uber-uns" className="block py-2 md:py-0 hover:underline">Über uns</Link>
             </li>
             <li>
-              <Link href="/datenschutz">
-                <a className="block py-2 md:py-0 hover:underline">Datenschutz</a>
-              </Link>
+              <Link href="/datenschutz" className="block py-2 md:py-0 hover:underline">Datenschutz</Link>
             </li>
           </ul>
         </nav>

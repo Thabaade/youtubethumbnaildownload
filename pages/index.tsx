@@ -1,50 +1,68 @@
 import { useState } from "react";
 import Head from "next/head";
-import Image from "next/image";
+
 
 export default function Home() {
   const [url, setUrl] = useState("");
   const [thumbnails, setThumbnails] = useState(null);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setThumbnails(null);
-  
+
     try {
-      // Your existing logic
+      const response = await fetch("/api/thumbnail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setThumbnails(data.resolutions);
+      } else {
+        setError(data.error);
+      }
     } catch (err) {
-      setError("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
+      setError("Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.");
     }
   };
 
-const handleDownload = async (imageUrl: string, quality: string) => {
-  try {
-    const response = await fetch(`/api/download?url=${encodeURIComponent(imageUrl)}`);
+  const handleDownload = async (imageUrl, quality) => {
+    try {
+      // Use a proxy to bypass CORS issues
+      const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+      const response = await fetch(proxyUrl + imageUrl, {
+        method: "GET",
+      });
 
-    if (!response.ok) {
-      throw new Error("Bild konnte nicht heruntergeladen werden.");
+      if (!response.ok) {
+        throw new Error("Image fetch failed.");
+      }
+
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `youtube-thumbnail-${quality}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href); // Free up memory
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Fehler beim Herunterladen der Datei. Bitte versuchen Sie es erneut.");
     }
-
-    const blob = await response.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `youtube-thumbnail-${quality}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-  } catch (err) {
-    console.error("Error during download:", err);
-    alert("Fehler beim Herunterladen der Datei. Bitte versuchen Sie es erneut.");
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <Head>
+        {/* SEO Meta Tags */}
         <title>YouTube Thumbnail Downloader | Laden Sie Thumbnails kostenlos herunter</title>
         <meta
           name="description"
@@ -57,39 +75,44 @@ const handleDownload = async (imageUrl: string, quality: string) => {
         <meta name="author" content="YoutubeThumbnailDownload.de" />
         <meta name="robots" content="index, follow" />
 
+        {/* Open Graph Tags for Social Media */}
         <meta property="og:title" content="YouTube Thumbnail Downloader" />
         <meta
           property="og:description"
           content="Laden Sie hochauflösende Thumbnails von YouTube-Videos kostenlos herunter."
         />
         <meta property="og:image" content="/assets/thumbnail-preview.jpg" />
-        <meta property="og:url" content="https://www.YoutubeThumbnailDownload.de" />
+        <meta property="og:url" content="https://YoutubeThumbnailDownload.de" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="de_DE" />
 
+        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              name: "Youtube Thumbnail Downloader",
-              url: "https://www.YoutubeThumbnailDownload.de",
-              description:
+              "name": "Youtube Thumbnail Downloader",
+              "url": "https://YoutubeThumbnailDownload.de",
+              "description":
                 "Laden Sie kostenlos Thumbnails von YouTube-Videos in hoher Qualität herunter.",
-              inLanguage: "de",
+              "inLanguage": "de",
             }),
           }}
         />
       </Head>
 
+      {/* Form Section */}
       <div className="w-full max-w-lg text-center">
-        <h1 className="text-4xl font-extrabold text-gray-800 mb-8">YouTube Thumbnail Downloader</h1>
+      <h1 className="text-4xl font-extrabold text-gray-800 mb-8">
+        Youtube Thumbnail Download
+        </h1>
         <p className="text-gray-500 text-lg leading-relaxed mb-8">
-          Mit dieser Anwendung kannst du Thumbnails in höchster Qualität herunterladen. Füge einfach die URL des Videos in
-          das untenstehende Eingabefeld ein und klicke auf „Thumbnail herunterladen“. Schneller, einfacher und kostenlos!
+        Mit dieser Anwendung kannst du Thumbnails in höchster Qualität herunterladen. Füge einfach die URL des Videos in das untenstehende Eingabefeld ein und klicke auf „Thumbnail herunterladen“. Schneller, einfacher und kostenlos!
         </p>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="w-full max-w-lg mb-8 flex flex-col space-y-4 items-center justify-center">
           <input
             type="url"
@@ -102,13 +125,15 @@ const handleDownload = async (imageUrl: string, quality: string) => {
             type="submit"
             className="bg-red-600 text-white py-3 px-10 rounded-full shadow-lg hover:bg-red-700 transition"
           >
-            Thumbnail Downloader​
+            Thumbnail Download
           </button>
         </form>
 
+        {/* Error Message */}
         {error && <p className="text-red-500">{error}</p>}
       </div>
 
+      {/* Thumbnails Section */}
       {thumbnails && (
         <div className="w-full max-w-4xl space-y-6">
           {["maxres", "high", "medium", "default"].map((quality, index) => {
@@ -130,7 +155,7 @@ const handleDownload = async (imageUrl: string, quality: string) => {
                     ? "Mittlere Qualität"
                     : "Standardqualität"}
                 </h3>
-                <Image
+                <img
                   src={thumbnails[quality]}
                   alt={`${quality} resolution`}
                   className={`rounded-lg shadow-lg ${
@@ -141,13 +166,7 @@ const handleDownload = async (imageUrl: string, quality: string) => {
                   onClick={() => handleDownload(thumbnails[quality], quality)}
                   className="inline-block bg-blue-500 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-600 transition"
                 >
-                  {`${quality === "maxres"
-                    ? "Maximale Qualität"
-                    : quality === "high"
-                    ? "Hohe Qualität"
-                    : quality === "medium"
-                    ? "Mittlere Qualität"
-                    : "Standardqualität"} Thumbnail herunterladen`}
+                  Herunterladen
                 </button>
               </div>
             );

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Link from "next/link"; // Added the missing Link import
+import Link from "next/link";
 
 export default function AboutUs() {
   return (
@@ -36,10 +36,8 @@ export default function AboutUs() {
           Haben Sie Feedback oder Fragen? Zögern Sie nicht, uns zu kontaktieren. Wir freuen uns, von Ihnen zu hören!
         </p>
         <div className="mt-8">
-          <Link href="/">
-            <a className="bg-red-600 text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition">
-              Zurück zur Startseite
-            </a>
+          <Link href="/" className="bg-red-600 text-white py-3 px-8 rounded-full shadow-lg hover:bg-red-700 transition">
+            Zurück zur Startseite
           </Link>
         </div>
       </div>
