@@ -7,11 +7,11 @@ export default function Home() {
   const [thumbnails, setThumbnails] = useState(null);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setThumbnails(null);
-
+  
     try {
       const response = await fetch("/api/thumbnail", {
         method: "POST",
@@ -20,9 +20,9 @@ export default function Home() {
         },
         body: JSON.stringify({ url }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         setThumbnails(data.resolutions);
       } else {
