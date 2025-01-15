@@ -33,18 +33,17 @@ export default function Home() {
     }
   };
 
-  const handleDownload = async (imageUrl, quality) => {
+  const handleDownload = async (imageUrl: string, quality: string) => {
     try {
-      // Use a proxy to bypass CORS issues
-      const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-      const response = await fetch(proxyUrl + imageUrl, {
-        method: "GET",
-      });
-
+      console.log("Image URL:", imageUrl); // Debugging log
+  
+      // Call the download API
+      const response = await fetch(`/api/download?url=${encodeURIComponent(imageUrl)}`);
+  
       if (!response.ok) {
-        throw new Error("Image fetch failed.");
+        throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
       }
-
+  
       const blob = await response.blob();
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
@@ -55,7 +54,7 @@ export default function Home() {
       URL.revokeObjectURL(link.href); // Free up memory
     } catch (err) {
       console.error("Download failed:", err);
-      alert("Fehler beim Herunterladen der Datei. Bitte versuchen Sie es erneut.");
+      alert(`Fehler beim Herunterladen der Datei: ${err.message}`);
     }
   };
 
