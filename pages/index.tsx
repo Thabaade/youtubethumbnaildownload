@@ -138,14 +138,7 @@ export default function Home() {
         <div className="w-full max-w-4xl space-y-6">
           {["maxres", "high", "medium", "default"].map((quality, index) => {
   if (!thumbnails[quality]) return null;
-
-  const qualityLabels = {
-    maxres: "Maximale Thumbnail Download",
-    high: "Hohe Thumbnail Download",
-    medium: "Mittlere Thumbnail Download",
-    default: "Standard Thumbnail Download"
-  };
-
+  
   return (
     <div
       key={quality}
@@ -154,7 +147,13 @@ export default function Home() {
       }`}
     >
       <h3 className="text-lg font-bold text-gray-800 capitalize">
-        {qualityLabels[quality]}
+        {quality === "maxres"
+          ? "Maximale Qualität Thumbnail Download"
+          : quality === "high"
+          ? "Hohe Qualität Thumbnail Download"
+          : quality === "medium"
+          ? "Mittlere Qualität Thumbnail Download"
+          : "Standard Qualität Thumbnail Download"}
       </h3>
       <img
         src={thumbnails[quality]}
@@ -167,7 +166,13 @@ export default function Home() {
         onClick={() => handleDownload(thumbnails[quality], quality)}
         className="inline-block bg-blue-500 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-600 transition"
       >
-        {qualityLabels[quality]}
+        {quality === "maxres"
+          ? "Maximale Qualität Thumbnail Download"
+          : quality === "high"
+          ? "Hohe Qualität Thumbnail Download"
+          : quality === "medium"
+          ? "Mittlere Qualität Thumbnail Download"
+          : "Standard Qualität Thumbnail Download"}
       </button>
     </div>
   );
