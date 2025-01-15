@@ -52,9 +52,10 @@ export default function Home() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href); // Free up memory
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Download failed:", err);
-      alert(`Fehler beim Herunterladen der Datei: ${err.message}`);
+      const errorMessage = err instanceof Error ? err.message : "Unbekannter Fehler";
+      alert(`Fehler beim Herunterladen der Datei: ${errorMessage}`);
     }
   };
 
