@@ -137,40 +137,41 @@ export default function Home() {
       {thumbnails && (
         <div className="w-full max-w-4xl space-y-6">
           {["maxres", "high", "medium", "default"].map((quality, index) => {
-            if (!thumbnails[quality]) return null;
+  if (!thumbnails[quality]) return null;
 
-            return (
-              <div
-                key={quality}
-                className={`bg-white shadow-md rounded-lg p-4 flex flex-col items-center ${
-                  index === 0 ? "space-y-6" : "space-y-4"
-                }`}
-              >
-                <h3 className="text-lg font-bold text-gray-800 capitalize">
-                  {quality === "maxres"
-                    ? "Maximale Qualität"
-                    : quality === "high"
-                    ? "Hohe Qualität"
-                    : quality === "medium"
-                    ? "Mittlere Qualität"
-                    : "Standardqualität"}
-                </h3>
-                <img
-                  src={thumbnails[quality]}
-                  alt={`${quality} resolution`}
-                  className={`rounded-lg shadow-lg ${
-                    index === 0 ? "w-full max-w-2xl" : "w-full max-w-md"
-                  }`}
-                />
-                <button
-                  onClick={() => handleDownload(thumbnails[quality], quality)}
-                  className="inline-block bg-blue-500 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-600 transition"
-                >
-                  Herunterladen
-                </button>
-              </div>
-            );
-          })}
+  const qualityLabels = {
+    maxres: "Maximale Thumbnail Download",
+    high: "Hohe Thumbnail Download",
+    medium: "Mittlere Thumbnail Download",
+    default: "Standard Thumbnail Download"
+  };
+
+  return (
+    <div
+      key={quality}
+      className={`bg-white shadow-md rounded-lg p-4 flex flex-col items-center ${
+        index === 0 ? "space-y-6" : "space-y-4"
+      }`}
+    >
+      <h3 className="text-lg font-bold text-gray-800 capitalize">
+        {qualityLabels[quality]}
+      </h3>
+      <img
+        src={thumbnails[quality]}
+        alt={`${quality} resolution`}
+        className={`rounded-lg shadow-lg ${
+          index === 0 ? "w-full max-w-2xl" : "w-full max-w-md"
+        }`}
+      />
+      <button
+        onClick={() => handleDownload(thumbnails[quality], quality)}
+        className="inline-block bg-blue-500 text-white py-2 px-4 rounded-full shadow-lg hover:bg-blue-600 transition"
+      >
+        {qualityLabels[quality]}
+      </button>
+    </div>
+  );
+})}
         </div>
       )}
     </div>
